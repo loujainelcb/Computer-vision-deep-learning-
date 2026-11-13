@@ -16,7 +16,8 @@ addpath(fullfile(root, 'src'), ...
         fullfile(root, 'evaluation'));
 
 dossiers = {fullfile('data','train'), fullfile('data','test'), fullfile('data','splits'), ...
-            'models', fullfile('results','preprocessing'), fullfile('results','evaluation')};
+            'models', fullfile('results','preprocessing'), fullfile('results','training'), ...
+            fullfile('results','evaluation')};
 for k = 1:numel(dossiers)
     if ~isfolder(dossiers{k}), mkdir(dossiers{k}); end
 end

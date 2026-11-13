@@ -20,6 +20,14 @@ else
 end
 
 itersPerEpoch = floor(numel(imdsTrain.Files) / cfg.miniBatchSize);
+
+% --- Courbes d'entrainement : meme figure pour les trois modeles ---
+[~, modelName] = fileparts(modelFile);
+modelName = erase(string(modelName), "_model");
+[progressFcn, progressFig] = makeCourseProgressOutputFcn( ...
+    numel(imdsTrain.Files), cfg.miniBatchSize, cfg.maxEpochs, ...
+    cfg.plotSmoothingWindow, modelName);
+
 options = trainingOptions(cfg.optimizer, ...
     InitialLearnRate     = learnRate, ...
     MaxEpochs            = cfg.maxEpochs, ...
@@ -30,7 +38,8 @@ options = trainingOptions(cfg.optimizer, ...
     OutputNetwork        = cfg.outputNetwork, ...
     Metrics              = "accuracy", ...
     ExecutionEnvironment = cfg.executionEnvironment, ...
-    Plots                = "training-progress", ...
+    Plots                = "none", ...           % remplace par la figure ci-dessus
+    OutputFcn            = progressFcn, ...
     Verbose              = true);
 
 fprintf('Entrainement de %s : %d epochs, batch %d, lr %g\n', ...
@@ -39,6 +48,14 @@ tStart = tic;
 [net, trainInfo] = trainnet(dsTrain, net, lossFcn, options);
 trainingTime = toc(tStart);
 fprintf('Termine en %.1f min.\n', trainingTime / 60);
+
+% --- Export de la figure de progression (pour le rapport) ---
+figDir = fullfile(root, 'results', 'training');
+if ~isfolder(figDir), mkdir(figDir); end
+if isgraphics(progressFig)
+    exportgraphics(progressFig, fullfile(figDir, modelName + "_progress.png"), Resolution=160);
+    fprintf('Courbes : results/training/%s_progress.png\n', modelName);
+end
 
 % --- Sauvegarde : tout ce dont evaluation/ a besoin ---
 modelsDir = fullfile(root, 'models');

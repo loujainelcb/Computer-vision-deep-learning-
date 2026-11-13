@@ -15,6 +15,9 @@ cfg.optimizer     = "adam";
 cfg.outputNetwork = "best-validation";   % on garde le meilleur epoch en validation
 cfg.executionEnvironment = "auto";       % GPU si disponible, sinon CPU
 
+% --- Courbes d'entrainement (makeCourseProgressOutputFcn, memes pour les 3) ---
+cfg.plotSmoothingWindow = 10;            % moyenne glissante sur 10 iterations
+
 % --- Learning rate : seule difference autorisee, selon le point de depart ---
 cfg.learnRate.scratch  = 1e-3;   % LeNet-5 : poids aleatoires
 cfg.learnRate.transfer = 1e-4;   % MobileNetV2 / ResNet-18 : poids ImageNet

@@ -31,6 +31,7 @@ Food11/
 │   ├── randomBrightness.m         augmentation de luminosité de P1
 │   ├── classWeights.m             poids de classes (déséquilibre)
 │   ├── freezeBackbone.m           gel des couches pré-entraînées
+│   ├── makeCourseProgressOutputFcn.m   courbes d'entraînement (mêmes pour les 3)
 │   ├── load_split.m               CSV → imageDatastore
 │   └── leNet5.m                   architecture LeNet-5
 ├── preprocessing/           ← analyse et préparation du dataset
@@ -52,6 +53,7 @@ Food11/
 │   └── generate_json.m
 ├── results/
 │   ├── preprocessing/       ← figures + normalization_stats.mat
+│   ├── training/            ← courbes accuracy / loss de chaque modèle
 │   └── evaluation/          ← métriques, matrices de confusion, JSON (généré)
 └── docs/
     ├── preprocessing.md     ← analyse du dataset et choix de prétraitement
@@ -120,6 +122,7 @@ Tous les scripts retrouvent seuls la racine du projet : aucun chemin absolu n'es
 | Augmentation (train) | rotation ±15°, flip horizontal, zoom ×0,9–1,2, translation ±10 px, luminosité ×0,8–1,2 |
 | Déséquilibre | entropie croisée pondérée par l'inverse de la fréquence des classes |
 | Budget | 15 epochs, batch 32, Adam, une validation par epoch |
+| Courbes | même figure accuracy / loss (lissée sur 10 itérations) → `results/training/` |
 | Modèle retenu | meilleur epoch en validation |
 | Seed | 42 |
 | Validation / test | redimensionnement seul, aucune augmentation |
