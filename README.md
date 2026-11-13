@@ -17,6 +17,7 @@ Un bon modèle est donc à la fois **précis** et **léger**.
 ```
 Food11/
 ├── setup_project.m          ← à lancer en premier (path + vérifications)
+├── run_evaluation.m         ← évaluation + figures + tableau + JSON en une commande
 ├── data/
 │   ├── train/               ← 13 296 images, 11 sous-dossiers (non versionné)
 │   ├── test/                ← 3 097 images sans label (non versionné)
@@ -50,11 +51,13 @@ Food11/
 ├── evaluation/              ← comparaison et soumission
 │   ├── evaluate_models.m
 │   ├── compare_models.m
+│   ├── make_presentation.m        tableau + figures pour les slides
 │   └── generate_json.m
 ├── results/
 │   ├── preprocessing/       ← figures + normalization_stats.mat
 │   ├── training/            ← courbes accuracy / loss de chaque modèle
-│   └── evaluation/          ← métriques, matrices de confusion, JSON (généré)
+│   ├── evaluation/          ← métriques, matrices de confusion, JSON (généré)
+│   └── presentation/        ← tableau récapitulatif + toutes les figures des slides
 └── docs/
     ├── preprocessing.md     ← analyse du dataset et choix de prétraitement
     └── evaluation.md        ← métriques, figures et procédure de soumission
@@ -96,11 +99,19 @@ train_lenet5
 train_mobilenetv2
 train_resnet18
 
-% 3. Évaluation sur la validation puis soumission
-evaluate_models
-compare_models
-generate_json                 % → results/evaluation/submission_food11.json
+% 3. Évaluation, figures, tableau et JSON — en une commande :
+run_evaluation
+% équivaut à : evaluate_models → compare_models → make_presentation → generate_json
 ```
+
+| Sortie | Fichier |
+|---|---|
+| Tableau des 3 modèles | `results/presentation/tableau_recapitulatif.png` (+ `.csv`, `.md`) |
+| Matrices de confusion | `results/presentation/confusion_3_modeles.png` |
+| Accuracy / loss par epoch | `results/presentation/courbes_validation_3_modeles.png` |
+| F1 par classe | `results/presentation/f1_par_classe.png` |
+| Dataset, augmentation, progression, dashboard | `results/presentation/0*_*.png` |
+| **Soumission** | `results/evaluation/submission_food11.json` |
 
 Tous les scripts retrouvent seuls la racine du projet : aucun chemin absolu n'est codé en dur.
 
