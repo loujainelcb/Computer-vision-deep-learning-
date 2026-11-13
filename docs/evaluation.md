@@ -1,10 +1,10 @@
-# Food-11 — P4 : évaluation, comparaison et JSON final
+# Food-11 — Évaluation, comparaison et JSON final
 
-**Version préparatoire du 11 novembre 2026 — MATLAB R2025a / Deep Learning Toolbox.**
+MATLAB R2025a / Deep Learning Toolbox.
 
-Ce dossier contient **trois scripts MATLAB autonomes**, adaptés aux scripts P1/P2 fournis et aux deux CSV réels. Ils ne modifient aucun fichier de P1/P2 et **n'entraînent pas** les réseaux. Ils ne calculent **jamais** une métrique sur le test officiel non étiqueté.
+Le dossier `evaluation/` contient **trois scripts autonomes**. Ils **n'entraînent pas** les réseaux et ne calculent **jamais** de métrique sur le test officiel non étiqueté.
 
-> **État de vérification :** les deux CSV fournis ont été contrôlés indépendamment : 10 637 images de train, 2 659 de validation, 11 catégories, aucun doublon ni recouvrement. En revanche, les images du dataset et les modèles entraînés `.mat` n'étaient pas disponibles lors de la création : **les scripts n'ont pas encore été exécutés dans MATLAB sur de vrais modèles**.
+> **Contrôle du split :** 10 637 images de train, 2 659 de validation, 11 catégories, aucun doublon ni recouvrement (vérifié aussi à chaque exécution de `evaluate_models.m`).
 
 ## 1. Emplacement
 
@@ -31,29 +31,24 @@ generate_json
 - `compare_models.m` crée les graphiques pour le rapport, même si un ou deux modèles manquent, mais marque la comparaison comme **provisoire**.
 - `generate_json.m` **refuse par défaut** de finaliser tant que les **trois modèles** ne sont pas dans le tableau d'évaluation. Pour un essai provisoire **uniquement**, modifier en haut `requireAllThreeModels=false`.
 
-## 3. Ce que P2 et P3 doivent mettre dans `models/`
+## 3. Format des modèles dans `models/`
 
-| Modèle | Nom de fichier recommandé | Entrée probable |
-|---|---|---|
-| P2 LeNet-5 | `lenet5_model.mat` | 128 × 128 × 3 |
-| P3 MobileNetV2 | `mobilenetv2_model.mat` | souvent 224 × 224 × 3 |
-| P3 ResNet-18 | `resnet18_model.mat` | 224 × 224 × 3 |
+| Modèle | Fichier | Entrée | Produit par |
+|---|---|---|---|
+| LeNet-5 | `lenet5_model.mat` | 128 × 128 × 3 | `training/train_lenet5.m` |
+| MobileNetV2 | `mobilenetv2_model.mat` | 224 × 224 × 3 | `training/train_mobilenetv2.m` |
+| ResNet-18 | `resnet18_model.mat` | 224 × 224 × 3 | `training/train_resnet18.m` |
 
-**Pour P2** : son fichier `mai_train_lenet5.m` prévoit déjà :
-
-```matlab
-save(fullfile(modelsDir,'lenet5_model.mat'),'trainedNet','trainInfo','inputSize','classNames')
-```
-
-**Pour P3** : enregistrer le **réseau réellement entraîné à 11 classes**, pas le réseau ImageNet à 1000 classes. Si le modèle est un `dlnetwork` issu de `trainnet`, enregistrer **en plus** l'ordre des catégories de sortie :
+Les trois scripts d'entraînement passent par `src/runTraining.m`, qui sauvegarde toujours les mêmes variables :
 
 ```matlab
-classNames = categories(imdsTrain.Labels);   % si c'est l'ordre utilisé
-inputSize  = [224 224 3];
-save('models/mobilenetv2_model.mat','net','classNames','inputSize')
+save(..., 'net','trainInfo','classNames','inputSize','trainingTime','cfg')
 ```
 
-Même chose pour ResNet. L'ordre `classNames` doit correspondre exactement aux colonnes des scores du réseau. Si P3 a appliqué un prétraitement supplémentaire **en dehors du modèle** (normalisation personnalisée, recadrage...), il faudra le reproduire dans `predictLabels` : les scripts actuels redimensionnent les images et laissent le réseau effectuer sa **normalisation interne**, sans data augmentation lors de la validation/test.
+- `classNames` : ordre exact des 11 sorties du réseau. S'il manque (anciens modèles), l'évaluation suppose l'ordre alphabétique, qui est celui de `trainnet`, et affiche un avertissement.
+- `cfg` : le protocole d'entraînement utilisé (`src/trainingConfig.m`), pour pouvoir le citer dans le rapport.
+
+Toute la normalisation est **dans le réseau** : l'évaluation se contente de redimensionner les images, sans augmentation, exactement comme le datastore de validation pendant l'entraînement.
 
 **En cas d'erreur** : remplacer `executionEnvironment='auto'` par `'cpu'` si le GPU n'est pas utilisable, et réduire `miniBatchSize=32` à `16` ou `8` si nécessaire.
 
@@ -87,7 +82,7 @@ Les supports fournis indiquent :
 - **`comparison_dashboard.png`** : une seule grande figure présentant **(a)** Accuracy / macro-F1 / balanced accuracy, **(b)** Frugality Score, **(c)** millions de paramètres, **(d)** nuage F1 vs paramètres. Les échelles sont séparées pour ne pas mélanger paramètres et scores.
 - **`classwise_f1_heatmap.png`** : tableau coloré 11 classes × modèles, pour comprendre qui reconnaît le mieux le riz, les desserts, etc.
 - **`confusion_leNet_5.png`**, **`confusion_mobilenetv2.png`**, **`confusion_resnet.png`** : matrices de confusion normalisées **par vraie classe** (les colonnes représentent les classes prédites).
-- **`learning_curve_*.png`** : si P2/P3 sauvegardent un `trainInfo` avec TrainingAccuracy / ValidationAccuracy ; utile pour discuter du surapprentissage.
+- **`learning_curve_*.png`** : accuracy train / validation au fil des itérations (lue dans `trainInfo`) ; utile pour discuter du surapprentissage.
 - **`top_errors_*.csv`** : cinq confusions les plus fréquentes pour argumenter le rapport.
 
 Les figures *communes* répondent à « quel réseau gagne et pourquoi ? » ; les matrices *séparées* expliquent « où se trompe chaque réseau ? ». Le professeur n'impose pas un graphique unique : c'est un choix de présentation.
@@ -110,11 +105,8 @@ Le script crée aussi `test_predictions.csv` et `test_class_distribution.png` **
 
 Le challenge permet des évaluations privées si on **ne coche pas « Update leaderboard ? »**. Mettre à jour le leaderboard seulement pour l'entrée finale du groupe. L'entrée peut être écrasée si on réutilise le même nom de groupe.
 
-## 6. Ce qui reste à faire dans le projet collectif
+## 6. Points à discuter dans le rapport
 
-- **P1** : fournir aux machines locales `data/train` et `data/test` ; le split CSV est déjà disponible.
-- **P2** : résoudre si besoin les dépendances de son script d'entraînement (ex. `makeCourseProgressOutputFcn`), puis sauvegarder LeNet-5 entraîné en `.mat`.
-- **P3** : entraîner MobileNetV2 et ResNet, sauvegarder les modèles et, pour `dlnetwork`, les `classNames`.
-- **P4** : lancer les trois scripts, vérifier les matrices de confusion, argumenter le meilleur compromis F1/paramètres ; préparer JSON et soumission.
-
-**Note** : les scripts n'ont pas pu être lancés dans MATLAB ici (MATLAB et les modèles ne sont pas disponibles dans cet environnement). Il faudra éventuellement adapter leurs entrées à la manière exacte dont P3 a entraîné/sauvegardé ses réseaux. Ils sont fournis comme **base de travail commentée et reproductible**, pas comme résultats déjà vérifiés.
+- **Comparaison équitable** : les trois modèles partagent le même split, la même augmentation, les mêmes poids de classes, le même budget (epochs, batch, optimiseur) et la même règle de sélection (`best-validation`). Seules diffèrent la taille d'entrée, la normalisation et le learning rate, imposés par le point de départ (zéro ou ImageNet).
+- **Biais de validation** : la validation sert à choisir le meilleur epoch et le meilleur modèle ; les scores locaux sont donc légèrement optimistes. Le score du serveur, sur le test, est la référence.
+- **Frugalité** : avec `freezeBackbone = true`, peu de poids sont entraînés, mais **tous** comptent dans le nombre de paramètres R.

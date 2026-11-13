@@ -379,24 +379,37 @@ end
 function exportTrainingHistory(S,modelName,resultDir,tag)
     if ~isfield(S,'trainInfo'),return;end
     info=S.trainInfo;
-    if ~isstruct(info) && ~istable(info),return;end
-    if istable(info), info=table2struct(info,'ToScalar',true); end
-    if ~isfield(info,'TrainingAccuracy') || ~isfield(info,'ValidationAccuracy')
-        return;
-    end
-    trainAcc=double(info.TrainingAccuracy(:));
-    valAcc=double(info.ValidationAccuracy(:));
-    if isfield(info,'Iteration')
-        x=double(info.Iteration(:));
+    if isobject(info) && isprop(info,'TrainingHistory')
+        % Objet TrainingInfo renvoye par trainnet : deux tables separees
+        th=info.TrainingHistory; vh=info.ValidationHistory;
+        if ~ismember('Accuracy',th.Properties.VariableNames),return;end
+        x=double(th.Iteration); trainAcc=double(th.Accuracy);
+        if ~isempty(vh) && ismember('Accuracy',vh.Properties.VariableNames)
+            xv=double(vh.Iteration); valAcc=double(vh.Accuracy);
+        else
+            xv=[]; valAcc=[];
+        end
     else
-        x=(1:numel(trainAcc))';
+        % Ancien format (struct / table de trainNetwork)
+        if ~isstruct(info) && ~istable(info),return;end
+        if istable(info), info=table2struct(info,'ToScalar',true); end
+        if ~isfield(info,'TrainingAccuracy') || ~isfield(info,'ValidationAccuracy')
+            return;
+        end
+        trainAcc=double(info.TrainingAccuracy(:));
+        valAcc=double(info.ValidationAccuracy(:));
+        if isfield(info,'Iteration')
+            x=double(info.Iteration(:));
+        else
+            x=(1:numel(trainAcc))';
+        end
+        if numel(x)~=numel(trainAcc),return;end
+        valid=isfinite(valAcc); xv=x(valid); valAcc=valAcc(valid);
     end
-    if numel(x)~=numel(trainAcc),return;end
     fig=figure('Visible','off','Position',[50 50 1050 550]);
     plot(x,trainAcc,'-','LineWidth',1.6);hold on;
-    if numel(valAcc)==numel(x)
-        valid=isfinite(valAcc);
-        plot(x(valid),valAcc(valid),'o-','LineWidth',1.4);
+    if ~isempty(valAcc)
+        plot(xv,valAcc,'o-','LineWidth',1.4);
     end
     xlabel('Iterations');ylabel('Accuracy (%)');
     title(char(modelName+" - entrainement / validation"));

@@ -21,14 +21,14 @@ function layers = leNet5(inputSize,numClasses,InputLayer)
         convolution2dLayer(5, 6, Padding='same', Name='conv1')
         batchNormalizationLayer(Name='batchnorm1') %stabilise l'entrainement
         reluLayer(Name='relu1')  % Acitve les neurones , reLu est plus performante que tanh
-        maxPooling2dLayer(2, Stride=2, Name='pool1') %sous_echantillonage par 2 en prenant la moyenne
+        maxPooling2dLayer(2, Stride=2, Name='pool1') %sous_echantillonage par 2 en prenant le maximum
         
         % --BLOC DE CONOLUTION 2 
         % On a 16 filtres de taille 5x5. Padding = same (permet de conserver la taille de l'image
         convolution2dLayer(5, 16, Padding='same', Name='conv2')
         batchNormalizationLayer(Name='batchnorm2') %stabilise l'entrainement
         reluLayer(Name='relu2')  % Acitve les neurones , reLu est plus performante que tanh
-        maxPooling2dLayer(2, Stride=2, Name='pool2') %sous_echantillonage par 2 en prenant la moyenne
+        maxPooling2dLayer(2, Stride=2, Name='pool2') %sous_echantillonage par 2 en prenant le maximum
         
         % --BLOC DE CONOLUTION 3 
         % On a 120 filtres de taille 5x5. Ppour extraire les

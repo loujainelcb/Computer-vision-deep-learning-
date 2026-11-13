@@ -102,8 +102,11 @@ Les scripts 3 et 4 lisent les CSV produits par le script 2.
 | Flip horizontal | `RandXReflection` | oui |
 | Zoom | `RandScale` | ×0,9 – ×1,2 |
 | Translation | `RandX/YTranslation` | ±10 pixels |
-| Luminosité | `transform` + fonction `changerLuminosite` | facteur ×0,8 – ×1,2 |
+| Luminosité | `transform` + fonction `randomBrightness` | facteur ×0,8 – ×1,2 |
 
+- Ces plages sont définies **une seule fois** dans `src/trainingConfig.m` (`cfg.aug`).
+  `augment_images.m` les visualise, et les trois entraînements les utilisent via
+  `src/makeDatastores.m` : modifier une plage la change partout.
 - `imageDataAugmenter` n'a pas d'option de luminosité. Elle est donc ajoutée
   par `transform(...)` sur le datastore d'entraînement.
 - **Les augmentations ne sont appliquées qu'au train.** Le datastore de
@@ -114,9 +117,8 @@ Les scripts 3 et 4 lisent les CSV produits par le script 2.
   (remplissage à 0).
 
 ```matlab
-dsTrain = augmentedImageDatastore([sz sz], imdsTrain, 'DataAugmentation', augmenter);
-dsTrain = transform(dsTrain, @luminositeBatch);
-dsVal   = augmentedImageDatastore([sz sz], imdsVal);   % aucune augmentation
+% Utilisé tel quel par les trois scripts d'entraînement (via runTraining)
+[dsTrain, dsVal] = makeDatastores(root, [sz sz]);   % train augmenté, val sans augmentation
 ```
 
 ## 5. Expérimentations prévues

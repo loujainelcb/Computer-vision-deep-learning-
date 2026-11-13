@@ -23,17 +23,24 @@ Food11/
 │   └── splits/              ← split stratifié 80/20 (seed 42)
 │       ├── train_files.csv        10 637 images
 │       └── validation_files.csv    2 659 images
-├── src/                     ← fonctions réutilisées par les scripts
+├── src/                     ← fonctions partagées
+│   ├── trainingConfig.m           protocole d'entraînement COMMUN aux 3 modèles
+│   ├── runTraining.m              entraînement + sauvegarde (utilisé par les 3)
+│   ├── makeDatastores.m           split + redimensionnement + augmentation
+│   ├── makeAugmenter.m            augmentations géométriques de P1
+│   ├── randomBrightness.m         augmentation de luminosité de P1
+│   ├── classWeights.m             poids de classes (déséquilibre)
+│   ├── freezeBackbone.m           gel des couches pré-entraînées
 │   ├── load_split.m               CSV → imageDatastore
-│   ├── leNet5.m                   architecture LeNet-5
-│   └── makeCourseProgressOutputFcn.m   courbes d'entraînement
+│   └── leNet5.m                   architecture LeNet-5
 ├── preprocessing/           ← analyse et préparation du dataset
 │   ├── analyze_dataset.m
 │   ├── split_dataset.m
 │   ├── preprocess_images.m
 │   └── augment_images.m
-├── training/                ← entraînement des réseaux
+├── training/                ← un script court par modèle
 │   ├── train_lenet5.m
+│   ├── train_mobilenetv2.m
 │   └── train_resnet18.m
 ├── models/                  ← réseaux entraînés (.mat)
 │   ├── lenet5_model.mat
@@ -48,9 +55,23 @@ Food11/
 │   └── evaluation/          ← métriques, matrices de confusion, JSON (généré)
 └── docs/
     ├── preprocessing.md     ← analyse du dataset et choix de prétraitement
-    ├── evaluation.md        ← métriques, figures et procédure de soumission
-    └── lenet5_integration.docx
+    └── evaluation.md        ← métriques, figures et procédure de soumission
 ```
+
+## Comment les parties sont liées
+
+```
+preprocessing/  ──►  data/splits/*.csv ─────────────┐
+                ──►  normalization_stats.mat ─► LeNet│
+src/trainingConfig.m (augmentation, epochs, …) ─────┤
+                                                    ▼
+training/train_*.m ──► src/runTraining.m ──► models/*.mat
+                                                    │
+evaluation/evaluate_models ◄── même split de validation
+          → compare_models → generate_json → submission_food11.json
+```
+
+Les paramètres d'augmentation sont définis **une seule fois** dans `src/trainingConfig.m`. Ils servent à la fois à la visualisation de P1 (`augment_images.m`) et aux trois entraînements.
 
 ## Prérequis
 
@@ -68,8 +89,9 @@ split_dataset                 % régénère les CSV (même seed → même split)
 preprocess_images             % calcule mu / sigma
 augment_images                % visualise les augmentations
 
-% 2. Entraînement (les modèles sont déjà fournis dans models/)
+% 2. Entraînement (protocole commun : src/trainingConfig.m)
 train_lenet5
+train_mobilenetv2
 train_resnet18
 
 % 3. Évaluation sur la validation puis soumission
@@ -82,16 +104,36 @@ Tous les scripts retrouvent seuls la racine du projet : aucun chemin absolu n'es
 
 ## Modèles
 
-| Modèle | Approche | Entrée | Paramètres (≈) |
-|---|---|---|---|
-| LeNet-5 | CNN entraîné de zéro | 128×128×3 | 3,75 M |
-| MobileNetV2 | Transfer learning ImageNet | 224×224×3 | 2,2 M |
-| ResNet-18 | Transfer learning ImageNet (dernière couche seule) | 224×224×3 | 11,2 M |
+| Modèle | Architecture | Point de départ | Entrée | Paramètres (≈) |
+|---|---|---|---|---|
+| LeNet-5 | 3 conv + 3 denses | Poids aléatoires | 128×128×3 | 3,75 M |
+| MobileNetV2 | Convolutions séparables, blocs résiduels inversés | ImageNet | 224×224×3 | 2,2 M |
+| ResNet-18 | 18 couches à connexions résiduelles | ImageNet | 224×224×3 | 11,2 M |
 
-- **Même split pour tous** : les trois modèles sont entraînés et évalués sur les CSV de `data/splits/`.
-- **Normalisation** : LeNet-5 utilise les statistiques du train (`results/preprocessing/normalization_stats.mat`) ;
-  les réseaux pré-entraînés gardent leur normalisation ImageNet intégrée.
-- **Validation et test** : redimensionnement uniquement, jamais d'augmentation.
+### Protocole de comparaison
+
+**Identique pour les trois** (`src/trainingConfig.m`) :
+
+| Élément | Valeur |
+|---|---|
+| Split | `data/splits/` — stratifié 80/20, seed 42 |
+| Augmentation (train) | rotation ±15°, flip horizontal, zoom ×0,9–1,2, translation ±10 px, luminosité ×0,8–1,2 |
+| Déséquilibre | entropie croisée pondérée par l'inverse de la fréquence des classes |
+| Budget | 15 epochs, batch 32, Adam, une validation par epoch |
+| Modèle retenu | meilleur epoch en validation |
+| Seed | 42 |
+| Validation / test | redimensionnement seul, aucune augmentation |
+
+**Différences imposées par le point de départ** :
+
+| | LeNet-5 | MobileNetV2 / ResNet-18 |
+|---|---|---|
+| Taille d'entrée | 128×128 | 224×224 (taille des poids ImageNet) |
+| Normalisation | z-score avec les stats du train (`results/preprocessing/normalization_stats.mat`) | normalisation ImageNet intégrée |
+| Learning rate | 1e-3 | 1e-4 |
+| Couches entraînées | toutes | dernière couche seulement (`freezeBackbone = true`) |
+
+Les modèles pré-entraînés nécessitent les support packages MATLAB *Deep Learning Toolbox Model for ResNet-18 Network* et *… for MobileNet-v2 Network*.
 
 ## Détails
 
