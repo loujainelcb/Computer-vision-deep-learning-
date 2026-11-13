@@ -10,7 +10,6 @@ cfg.seed = 42;
 
 % --- Budget d'entrainement (identique pour tous) ---
 cfg.maxEpochs     = 15;
-cfg.miniBatchSize = 16;            % maximum autorise (memoire GPU)
 cfg.optimizer     = "adam";
 cfg.outputNetwork = "best-validation";   % on garde le meilleur epoch en validation
 cfg.executionEnvironment = "auto";       % GPU si disponible, sinon CPU
@@ -18,7 +17,12 @@ cfg.executionEnvironment = "auto";       % GPU si disponible, sinon CPU
 % --- Courbes d'entrainement (makeCourseProgressOutputFcn, memes pour les 3) ---
 cfg.plotSmoothingWindow = 10;            % moyenne glissante sur 10 iterations
 
-% --- Learning rate : seule difference autorisee, selon le point de depart ---
+% --- Taille de batch PAR MODELE : valeurs retenues apres essais ---
+cfg.miniBatchSize.lenet5      = 64;
+cfg.miniBatchSize.mobilenetv2 = 8;
+cfg.miniBatchSize.resnet18    = 8;
+
+% --- Learning rate : selon le point de depart ---
 cfg.learnRate.scratch  = 1e-3;   % LeNet-5 : poids aleatoires
 cfg.learnRate.transfer = 1e-4;   % MobileNetV2 / ResNet-18 : poids ImageNet
 

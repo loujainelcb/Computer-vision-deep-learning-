@@ -5,9 +5,15 @@ function [net, trainInfo] = runTraining(net, inputSize, learnRate, modelFile, ro
 %   runTraining(net, [224 224 3], cfg.learnRate.transfer, 'resnet18_model.mat', root, cfg)
 %
 % Identique pour les trois modeles : split, augmentation, poids de classes,
-% epochs, batch, optimiseur, choix du meilleur epoch, format de sauvegarde.
+% epochs, optimiseur, choix du meilleur epoch, format de sauvegarde.
+% Le batch est propre a chaque modele (cfg.miniBatchSize.<modele>).
 
 [dsTrain, dsVal, imdsTrain] = makeDatastores(root, inputSize, cfg);
+
+% Nom court du modele (lenet5, mobilenetv2, resnet18) et son batch
+[~, modelName] = fileparts(modelFile);
+modelName = erase(string(modelName), "_model");
+miniBatchSize = cfg.miniBatchSize.(char(modelName));
 
 % --- Loss : entropie croisee, ponderee par classe si demande ---
 if cfg.useClassWeights
@@ -19,19 +25,17 @@ else
     lossFcn = "crossentropy";
 end
 
-itersPerEpoch = floor(numel(imdsTrain.Files) / cfg.miniBatchSize);
+itersPerEpoch = floor(numel(imdsTrain.Files) / miniBatchSize);
 
 % --- Courbes d'entrainement : meme figure pour les trois modeles ---
-[~, modelName] = fileparts(modelFile);
-modelName = erase(string(modelName), "_model");
 [progressFcn, progressFig] = makeCourseProgressOutputFcn( ...
-    numel(imdsTrain.Files), cfg.miniBatchSize, cfg.maxEpochs, ...
+    numel(imdsTrain.Files), miniBatchSize, cfg.maxEpochs, ...
     cfg.plotSmoothingWindow, modelName);
 
 options = trainingOptions(cfg.optimizer, ...
     InitialLearnRate     = learnRate, ...
     MaxEpochs            = cfg.maxEpochs, ...
-    MiniBatchSize        = cfg.miniBatchSize, ...
+    MiniBatchSize        = miniBatchSize, ...
     Shuffle              = "every-epoch", ...
     ValidationData       = dsVal, ...
     ValidationFrequency  = itersPerEpoch, ...   % une validation par epoch
@@ -43,7 +47,7 @@ options = trainingOptions(cfg.optimizer, ...
     Verbose              = true);
 
 fprintf('Entrainement de %s : %d epochs, batch %d, lr %g\n', ...
-    modelFile, cfg.maxEpochs, cfg.miniBatchSize, learnRate);
+    modelFile, cfg.maxEpochs, miniBatchSize, learnRate);
 tStart = tic;
 [net, trainInfo] = trainnet(dsTrain, net, lossFcn, options);
 trainingTime = toc(tStart);

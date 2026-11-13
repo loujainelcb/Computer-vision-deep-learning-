@@ -12,7 +12,7 @@ clearvars; clc;
 %% A. PARAMETRES
 selectedModel="auto";             % ou "LeNet-5", "MobileNetV2", "ResNet"
 requireAllThreeModels=true;       % securite : ne pas finaliser trop tot
-miniBatchSize=16;                 % maximum autorise (memoire GPU)
+miniBatchSize=32;                 % sans effet sur les predictions
 executionEnvironment='auto';     % 'cpu' si GPU indisponible
 expectedTestCount=3097;
 allowedClasses=["bread","dairy","dessert","egg","fried","meat", ...

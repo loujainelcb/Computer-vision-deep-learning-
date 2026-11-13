@@ -50,7 +50,7 @@ save(..., 'net','trainInfo','classNames','inputSize','trainingTime','cfg')
 
 Toute la normalisation est **dans le réseau** : l'évaluation se contente de redimensionner les images, sans augmentation, exactement comme le datastore de validation pendant l'entraînement.
 
-**En cas d'erreur** : remplacer `executionEnvironment='auto'` par `'cpu'` si le GPU n'est pas utilisable, et réduire `miniBatchSize` (16 par défaut, maximum autorisé) à `8` si nécessaire.
+**En cas d'erreur** : remplacer `executionEnvironment='auto'` par `'cpu'` si le GPU n'est pas utilisable, et réduire `miniBatchSize=32` à `16` ou `8` si nécessaire (sans effet sur les prédictions).
 
 ## 4. Les comparaisons — ce que demande vraiment le cours et le challenge
 
@@ -107,6 +107,6 @@ Le challenge permet des évaluations privées si on **ne coche pas « Update lea
 
 ## 6. Points à discuter dans le rapport
 
-- **Comparaison équitable** : les trois modèles partagent le même split, la même augmentation, les mêmes poids de classes, le même budget (epochs, batch, optimiseur) et la même règle de sélection (`best-validation`). Seules diffèrent la taille d'entrée, la normalisation et le learning rate, imposés par le point de départ (zéro ou ImageNet).
+- **Comparaison équitable** : les trois modèles partagent le même split, la même augmentation, les mêmes poids de classes, le même budget (epochs, optimiseur) et la même règle de sélection (`best-validation`). Seules diffèrent la taille d’entrée, la normalisation et le learning rate (imposés par le point de départ : zéro ou ImageNet), ainsi que la taille de batch, choisie par modèle après essais.
 - **Biais de validation** : la validation sert à choisir le meilleur epoch et le meilleur modèle ; les scores locaux sont donc légèrement optimistes. Le score du serveur, sur le test, est la référence.
 - **Frugalité** : avec `freezeBackbone = true`, peu de poids sont entraînés, mais **tous** comptent dans le nombre de paramètres R.
