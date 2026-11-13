@@ -1,0 +1,20 @@
+# Images du dataset (trop volumineuses, à copier localement)
+data/train/*
+data/test/*
+!data/train/.gitkeep
+!data/test/.gitkeep
+
+# Sorties générées par evaluation/ (régénérables)
+results/evaluation/*
+!results/evaluation/.gitkeep
+
+# Fichiers temporaires MATLAB
+*.asv
+*.m~
+slprj/
+*.mex*
+
+# Système
+.DS_Store
+Thumbs.db
+~$*
