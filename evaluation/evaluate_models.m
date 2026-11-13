@@ -16,7 +16,7 @@
 clearvars; clc;
 
 %% A. PARAMETRES FACILES A MODIFIER
-miniBatchSize = 32;              % Baisser a 8/16 si memoire limitee
+miniBatchSize = 16;              % maximum autorise (memoire GPU)
 executionEnvironment = 'auto';   % 'cpu', 'gpu' ou 'auto'
 w = 0.3;                        % Valeur de la consigne du challenge
 expectedValidationCount = 2659;

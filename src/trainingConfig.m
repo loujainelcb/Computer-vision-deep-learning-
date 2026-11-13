@@ -10,7 +10,7 @@ cfg.seed = 42;
 
 % --- Budget d'entrainement (identique pour tous) ---
 cfg.maxEpochs     = 15;
-cfg.miniBatchSize = 32;
+cfg.miniBatchSize = 16;            % maximum autorise (memoire GPU)
 cfg.optimizer     = "adam";
 cfg.outputNetwork = "best-validation";   % on garde le meilleur epoch en validation
 cfg.executionEnvironment = "auto";       % GPU si disponible, sinon CPU

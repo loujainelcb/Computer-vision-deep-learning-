@@ -50,7 +50,7 @@ save(..., 'net','trainInfo','classNames','inputSize','trainingTime','cfg')
 
 Toute la normalisation est **dans le réseau** : l'évaluation se contente de redimensionner les images, sans augmentation, exactement comme le datastore de validation pendant l'entraînement.
 
-**En cas d'erreur** : remplacer `executionEnvironment='auto'` par `'cpu'` si le GPU n'est pas utilisable, et réduire `miniBatchSize=32` à `16` ou `8` si nécessaire.
+**En cas d'erreur** : remplacer `executionEnvironment='auto'` par `'cpu'` si le GPU n'est pas utilisable, et réduire `miniBatchSize` (16 par défaut, maximum autorisé) à `8` si nécessaire.
 
 ## 4. Les comparaisons — ce que demande vraiment le cours et le challenge
 

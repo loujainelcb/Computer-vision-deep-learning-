@@ -132,7 +132,7 @@ Tous les scripts retrouvent seuls la racine du projet : aucun chemin absolu n'es
 | Split | `data/splits/` — stratifié 80/20, seed 42 |
 | Augmentation (train) | rotation ±15°, flip horizontal, zoom ×0,9–1,2, translation ±10 px, luminosité ×0,8–1,2 |
 | Déséquilibre | entropie croisée pondérée par l'inverse de la fréquence des classes |
-| Budget | 15 epochs, batch 32, Adam, une validation par epoch |
+| Budget | 15 epochs, batch 16 (maximum autorisé), Adam, une validation par epoch |
 | Courbes | même figure accuracy / loss (lissée sur 10 itérations) → `results/training/` |
 | Modèle retenu | meilleur epoch en validation |
 | Seed | 42 |
