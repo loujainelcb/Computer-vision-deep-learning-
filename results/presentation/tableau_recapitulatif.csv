@@ -1,0 +1,4 @@
+Modele,Parametres_M,Accuracy_pct,MacroF1,BalancedAccuracy_pct,FrugalityScore,ms_par_image
+MobileNetV2,2.26,84.8,0.856,85.3,0.649,21.8
+ResNet,11.19,75.7,0.76,77.2,0.484,23
+LeNet-5,2.52,60.6,0.594,64.4,0.379,35.9
