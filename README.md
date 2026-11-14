@@ -42,7 +42,8 @@ Food11/
 │   └── augment_images.m
 ├── training/                ← un script court par modèle
 │   ├── train_lenet5.m
-│   ├── train_mobilenetv2.m
+│   ├── train_mobilenetv2.m        entraînement direct (GPU conseillé)
+│   ├── tune_transfer.m            recherche d'hyperparamètres + modèle final (CPU)
 │   └── train_resnet18.m
 ├── models/                  ← réseaux entraînés (.mat)
 │   ├── lenet5_model.mat
@@ -56,6 +57,7 @@ Food11/
 ├── results/
 │   ├── preprocessing/       ← figures + normalization_stats.mat
 │   ├── training/            ← courbes accuracy / loss de chaque modèle
+│   ├── tuning/              ← recherche d'hyperparamètres (csv, figure, log)
 │   ├── evaluation/          ← métriques, matrices de confusion, JSON (généré)
 │   └── presentation/        ← tableau récapitulatif + toutes les figures des slides
 └── docs/
@@ -96,7 +98,7 @@ augment_images                % visualise les augmentations
 
 % 2. Entraînement (protocole commun : src/trainingConfig.m)
 train_lenet5
-train_mobilenetv2
+tune_transfer("mobilenetv2")  % recherche de réglages + modèle final (utilisé pour MobileNetV2)
 train_resnet18
 
 % 3. Évaluation, figures, tableau et JSON — en une commande :

@@ -51,7 +51,7 @@ end
 %% C. VERIFIER LE SPLIT ET RECONSTRUIRE LES CHEMINS
 % On ne conserve que (categorie, nom de fichier) du CSV, puis on
 % reconstruit data/train/classe/image.jpg localement.
-Tval = readtable(csvVal,'TextType','string');
+Tval = readSplitCsv(csvVal);
 if ~all(ismember({'File','Label'},Tval.Properties.VariableNames))
     error('Le CSV validation doit avoir les colonnes File et Label.');
 end
@@ -79,7 +79,7 @@ end
 % Verification explicite : pas de fuite de donnees entre train et val.
 trainCsv = fullfile(fileparts(csvVal),'train_files.csv');
 if isfile(trainCsv)
-    Ttrain = readtable(trainCsv,'TextType','string');
+    Ttrain = readSplitCsv(trainCsv);
     if ~all(ismember({'File','Label'},Ttrain.Properties.VariableNames))
         error('Le CSV train doit avoir les colonnes File et Label.');
     end
@@ -220,7 +220,8 @@ for m=1:numel(modelNames)
         [sortedErrors,linearIdx] = sort(Cerrors(:),'descend');
         keep = find(sortedErrors>0,5,'first');
         [rows,cols] = ind2sub(size(Cerrors),linearIdx(keep));
-        errorPairs = table(classNames(rows),classNames(cols), ...
+        rows = rows(:); cols = cols(:);
+        errorPairs = table(reshape(classNames(rows),[],1),reshape(classNames(cols),[],1), ...
             sortedErrors(keep), ...
             safeDivide(sortedErrors(keep),support(rows)), ...
             'VariableNames',{'TrueClass','PredictedClass','Count','FractionOfTrueClass'});
@@ -268,6 +269,14 @@ function root = locateProjectRoot(here)
         end
     end
     error('Racine du projet Food-11 introuvable (dossiers models/ et data/).');
+end
+function T=readSplitCsv(csvPath)
+    % Format impose (File,Label) : la detection automatique de readtable
+    % peut prendre une ligne de donnees pour l'en-tete (colonnes texte).
+    opts=delimitedTextImportOptions('NumVariables',2, ...
+        'VariableNames',{'File','Label'},'VariableTypes',{'string','string'}, ...
+        'Delimiter',',','DataLines',[2 Inf]);
+    T=readtable(csvPath,opts);
 end
 function p=firstExistingFile(candidates)
     p='';

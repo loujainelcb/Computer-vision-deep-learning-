@@ -1,0 +1,85 @@
+mobilenetv2 : entree [224 224 3], caracteristiques = sortie de "global_average_pooling2d_1", classifieur = "Logits"
+Extraction train (10637 images)...
+Extraction validation (2659 images)...
+Extraction train augmente, copie 1/2...
+Extraction train augmente, copie 2/2...
+Extraction terminee en 16.0 min.
+[etape 1 |  1/16] lr=0.0001  batch=8   L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.841 | macro-F1 0.8476 (844s)
+[etape 1 |  2/16] lr=0.0001  batch=16  L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.842 | macro-F1 0.8475 (439s)
+[etape 1 |  3/16] lr=0.0001  batch=32  L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.836 | macro-F1 0.8411 (211s)
+[etape 1 |  4/16] lr=0.0001  batch=64  L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.830 | macro-F1 0.8355 (104s)
+[etape 1 |  5/16] lr=0.0003  batch=8   L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.837 | macro-F1 0.8435 (8383s)
+[etape 1 |  6/16] lr=0.0003  batch=16  L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.838 | macro-F1 0.8435 (428s)
+[etape 1 |  7/16] lr=0.0003  batch=32  L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.842 | macro-F1 0.8496 (259s)
+[etape 1 |  8/16] lr=0.0003  batch=64  L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.843 | macro-F1 0.8490 (183s)
+[etape 1 |  9/16] lr=0.001   batch=8   L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.832 | macro-F1 0.8392 (1238s)
+[etape 1 | 10/16] lr=0.001   batch=16  L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.833 | macro-F1 0.8402 (671s)
+[etape 1 | 11/16] lr=0.001   batch=32  L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.834 | macro-F1 0.8399 (322s)
+[etape 1 | 12/16] lr=0.001   batch=64  L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.836 | macro-F1 0.8428 (179s)
+[etape 1 | 13/16] lr=0.003   batch=8   L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.822 | macro-F1 0.8298 (969s)
+[etape 1 | 14/16] lr=0.003   batch=16  L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.824 | macro-F1 0.8340 (411s)
+[etape 1 | 15/16] lr=0.003   batch=32  L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.831 | macro-F1 0.8399 (207s)
+[etape 1 | 16/16] lr=0.003   batch=64  L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.828 | macro-F1 0.8340 (103s)
+[etape 2 |  1/12] lr=0.0003  batch=32  L2=1e-05   drop=0    poids=1 aug=1 -> acc 0.842 | macro-F1 0.8492 (200s)
+[etape 2 |  2/12] lr=0.0003  batch=32  L2=1e-05   drop=0.2  poids=1 aug=1 -> acc 0.848 | macro-F1 0.8546 (213s)
+[etape 2 |  3/12] lr=0.0003  batch=32  L2=1e-05   drop=0.5  poids=1 aug=1 -> acc 0.838 | macro-F1 0.8455 (225s)
+[etape 2 |  4/12] lr=0.0003  batch=32  L2=0.0001  drop=0    poids=1 aug=1 -> acc 0.842 | macro-F1 0.8496 (202s)
+[etape 2 |  5/12] lr=0.0003  batch=32  L2=0.0001  drop=0.2  poids=1 aug=1 -> acc 0.847 | macro-F1 0.8539 (220s)
+[etape 2 |  6/12] lr=0.0003  batch=32  L2=0.0001  drop=0.5  poids=1 aug=1 -> acc 0.838 | macro-F1 0.8446 (222s)
+[etape 2 |  7/12] lr=0.0003  batch=32  L2=0.001   drop=0    poids=1 aug=1 -> acc 0.843 | macro-F1 0.8494 (217s)
+[etape 2 |  8/12] lr=0.0003  batch=32  L2=0.001   drop=0.2  poids=1 aug=1 -> acc 0.842 | macro-F1 0.8492 (211s)
+[etape 2 |  9/12] lr=0.0003  batch=32  L2=0.001   drop=0.5  poids=1 aug=1 -> acc 0.837 | macro-F1 0.8435 (213s)
+[etape 2 | 10/12] lr=0.0003  batch=32  L2=0.01    drop=0    poids=1 aug=1 -> acc 0.842 | macro-F1 0.8482 (219s)
+[etape 2 | 11/12] lr=0.0003  batch=32  L2=0.01    drop=0.2  poids=1 aug=1 -> acc 0.841 | macro-F1 0.8470 (221s)
+[etape 2 | 12/12] lr=0.0003  batch=32  L2=0.01    drop=0.5  poids=1 aug=1 -> acc 0.836 | macro-F1 0.8414 (220s)
+[etape 3 |  1/ 4] lr=0.0003  batch=32  L2=1e-05   drop=0.2  poids=1 aug=1 -> acc 0.848 | macro-F1 0.8546 (243s)
+[etape 3 |  2/ 4] lr=0.0003  batch=32  L2=1e-05   drop=0.2  poids=1 aug=0 -> acc 0.836 | macro-F1 0.8427 (77s)
+[etape 3 |  3/ 4] lr=0.0003  batch=32  L2=1e-05   drop=0.2  poids=0 aug=1 -> acc 0.848 | macro-F1 0.8564 (130s)
+[etape 3 |  4/ 4] lr=0.0003  batch=32  L2=1e-05   drop=0.2  poids=0 aug=0 -> acc 0.837 | macro-F1 0.8446 (39s)
+
+MEILLEURS PARAMETRES mobilenetv2 : lr=0.0003, batch=32, L2=1e-05, dropout=0.2, poids=0, aug=1
+Modele final : accuracy 0.848 | macro-F1 0.8564 (validation)
+Controle reseau complet / couche seule : 40/40 predictions identiques
+Modele sauvegarde : C:\Users\llach\Downloads\CHALLENGE TIP-20261113T161907Z-1-001\Food11\models\mobilenetv2_model.mat
+Termine en 322.2 min.
+
+ans =
+
+  32ž10 table
+
+    Etape    LearnRate    MiniBatchSize      L2      Dropout    ClassWeights    Augmentation    ValAccuracy    ValMacroF1    Secondes
+    _____    _________    _____________    ______    _______    ____________    ____________    ___________    __________    ________
+
+      1       0.0001            8          0.0001        0         true            true           0.84129       0.84763        843.6 
+      1       0.0001           16          0.0001        0         true            true           0.84167       0.84748       439.27 
+      1       0.0001           32          0.0001        0         true            true            0.8364       0.84108       210.98 
+      1       0.0001           64          0.0001        0         true            true           0.82964        0.8355       104.24 
+      1       0.0003            8          0.0001        0         true            true           0.83678       0.84354       8382.7 
+      1       0.0003           16          0.0001        0         true            true           0.83829       0.84351       428.23 
+      1       0.0003           32          0.0001        0         true            true           0.84242       0.84961       258.69 
+      1       0.0003           64          0.0001        0         true            true            0.8428       0.84904       182.67 
+      1        0.001            8          0.0001        0         true            true           0.83189       0.83918       1237.6 
+      1        0.001           16          0.0001        0         true            true           0.83264       0.84024       671.41 
+      1        0.001           32          0.0001        0         true            true           0.83415        0.8399        322.5 
+      1        0.001           64          0.0001        0         true            true            0.8364       0.84277        178.6 
+      1        0.003            8          0.0001        0         true            true           0.82174       0.82984       968.54 
+      1        0.003           16          0.0001        0         true            true           0.82362       0.83398       411.29 
+      1        0.003           32          0.0001        0         true            true           0.83076       0.83985       207.01 
+      1        0.003           64          0.0001        0         true            true           0.82813       0.83401          103 
+      2       0.0003           32           1e-05        0         true            true           0.84205       0.84917       199.95 
+      2       0.0003           32           1e-05      0.2         true            true           0.84769       0.85462          213 
+      2       0.0003           32           1e-05      0.5         true            true           0.83829       0.84551       224.87 
+      2       0.0003           32          0.0001        0         true            true           0.84242       0.84961       202.31 
+      2       0.0003           32          0.0001      0.2         true            true           0.84693        0.8539       219.87 
+      2       0.0003           32          0.0001      0.5         true            true           0.83753       0.84465       222.14 
+      2       0.0003           32           0.001        0         true            true            0.8428       0.84944       217.28 
+      2       0.0003           32           0.001      0.2         true            true           0.84167       0.84922       211.09 
+      2       0.0003           32           0.001      0.5         true            true           0.83716       0.84355       213.17 
+      2       0.0003           32            0.01        0         true            true           0.84242        0.8482       218.55 
+      2       0.0003           32            0.01      0.2         true            true           0.84054       0.84705       220.88 
+      2       0.0003           32            0.01      0.5         true            true            0.8364       0.84143       220.25 
+      3       0.0003           32           1e-05      0.2         true            true           0.84769       0.85462       243.46 
+      3       0.0003           32           1e-05      0.2         true            false          0.83603       0.84267       76.757 
+      3       0.0003           32           1e-05      0.2         false           true           0.84769        0.8564       130.46 
+      3       0.0003           32           1e-05      0.2         false           false          0.83716       0.84458       38.838 
+
