@@ -121,7 +121,7 @@ Tous les scripts retrouvent seuls la racine du projet : aucun chemin absolu n'es
 
 | Modèle | Architecture | Point de départ | Entrée | Paramètres (≈) |
 |---|---|---|---|---|
-| LeNet-5 | 3 conv + 3 denses | Poids aléatoires | 128×128×3 | 3,75 M |
+| LeNet-5 | 4 conv + 1 denses | Poids aléatoires | 128×128×3 | 2,52 M |
 | MobileNetV2 | Convolutions séparables, blocs résiduels inversés | ImageNet | 224×224×3 | 2,2 M |
 | ResNet-18 | 18 couches à connexions résiduelles | ImageNet | 224×224×3 | 11,2 M |
 
