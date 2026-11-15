@@ -10,7 +10,9 @@
 clearvars; clc;
 
 %% A. PARAMETRES
-selectedModel="auto";             % ou "LeNet-5", "MobileNetV2", "ResNet"
+selectedModel=string(getenv('FOOD11_MODEL'));
+if strlength(selectedModel)==0, selectedModel="auto"; end
+% ou "LeNet-5", "MobileNetV2", "ResNet" via FOOD11_MODEL
 requireAllThreeModels=true;       % securite : ne pas finaliser trop tot
 miniBatchSize=32;                 % sans effet sur les predictions
 executionEnvironment='auto';     % 'cpu' si GPU indisponible
@@ -98,7 +100,13 @@ end
 % IMPORTANT : une struct MATLAB avec le champ "0" n'est pas valide.
 % On ecrit donc les cles JSON directement, avec jsonencode pour les textes.
 if ~isfolder(resultDir),mkdir(resultDir);end
-outputJson=fullfile(resultDir,'submission_food11.json');
+if strcmpi(selectedModel,"auto")
+    outputName='submission_food11.json';
+else
+    modelTag=lower(regexprep(char(modelName),'[^a-zA-Z0-9]+','_'));
+    outputName=['submission_food11_' modelTag '.json'];
+end
+outputJson=fullfile(resultDir,outputName);
 fid=fopen(outputJson,'w','n','UTF-8');
 if fid<0,error('Creation du JSON impossible : %s',outputJson);end
 try

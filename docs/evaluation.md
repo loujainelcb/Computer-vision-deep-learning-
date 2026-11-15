@@ -102,6 +102,10 @@ Les figures *communes* répondent à « quel réseau gagne et pourquoi ? » ; le
 **L'exemple ci-dessus est fictif**, les vraies prédictions dépendront du modèle entraîné. Le script utilise les vrais noms de fichiers sans extension comme clés (ne suppose pas que les images sont numérotées sans trous).
 
 Le script crée aussi `test_predictions.csv` et `test_class_distribution.png` **pour contrôle interne** : ne pas les envoyer au serveur. Le site demande le **JSON**, le nombre de paramètres **en millions** et une description courte du modèle.
+Pour tester un modèle particulier sans écraser la soumission automatique, définir
+`FOOD11_MODEL=ResNet` avant de lancer `generate_json.m`. Le fichier créé sera
+alors `results/evaluation/submission_food11_resnet.json`. Les valeurs possibles
+sont `LeNet-5`, `MobileNetV2` et `ResNet`.
 
 Le challenge permet des évaluations privées si on **ne coche pas « Update leaderboard ? »**. Mettre à jour le leaderboard seulement pour l'entrée finale du groupe. L'entrée peut être écrasée si on réutilise le même nom de groupe.
 
