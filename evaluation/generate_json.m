@@ -12,14 +12,14 @@ clearvars; clc;
 %% A. PARAMETRES
 selectedModel=string(getenv('FOOD11_MODEL'));
 if strlength(selectedModel)==0, selectedModel="auto"; end
-% ou "LeNet-5", "MobileNetV2", "ResNet" via FOOD11_MODEL
+% ou "LeNet-5", "MobileNetV2", "ResNet-18 FT", "ResNet-18 gele" via FOOD11_MODEL
 requireAllThreeModels=true;       % securite : ne pas finaliser trop tot
 miniBatchSize=32;                 % sans effet sur les predictions
 executionEnvironment='auto';     % 'cpu' si GPU indisponible
 expectedTestCount=3097;
 allowedClasses=["bread","dairy","dessert","egg","fried","meat", ...
     "noodles-pasta","rice","seafood","soup","vegetable-fruit"];
-plannedModels=["LeNet-5","MobileNetV2","ResNet"];
+plannedModels=["LeNet-5","MobileNetV2","ResNet-18 FT","ResNet-18 gele"];
 
 %% B. TROUVER LE PROJET ET LE TABLEAU DE VALIDATION
 root=locateProjectRoot(fileparts(mfilename('fullpath')));

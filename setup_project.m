@@ -35,10 +35,15 @@ fprintf('data/splits : train_files.csv %s | validation_files.csv %s\n', ...
     ok(isfile(fullfile('data','splits','validation_files.csv'))));
 
 % --- Modeles ---
-modeles = {'lenet5_model.mat','mobilenetv2_model.mat','resnet18_model.mat'};
+modeles = {'lenet5_model.mat','mobilenetv2_model.mat','resnet18_model.mat','resnet18_full_ft.mat'};
 fprintf('\nModeles entraines (models/) :\n');
 for k = 1:numel(modeles)
     fprintf('  %-24s %s\n', modeles{k}, ok(isfile(fullfile('models', modeles{k}))));
+end
+
+% --- Toolbox ---
+if isempty(which('dlnetwork'))
+    warning('Deep Learning Toolbox absente : les modeles ne se chargeront pas.');
 end
 
 if nClasses < 11 || nTest == 0

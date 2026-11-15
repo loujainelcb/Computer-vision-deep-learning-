@@ -44,11 +44,15 @@ Food11/
 │   ├── train_lenet5.m
 │   ├── train_mobilenetv2.m        entraînement direct (GPU conseillé)
 │   ├── tune_transfer.m            recherche d'hyperparamètres + modèle final (CPU)
-│   └── train_resnet18.m
+│   ├── train_resnet18.m           ResNet-18 gelé
+│   ├── train_resnet18_partial_ft.m  fine-tuning res5a/res5b + tête
+│   └── train_resnet18_full_ft.m     fine-tuning complet
 ├── models/                  ← réseaux entraînés (.mat)
 │   ├── lenet5_model.mat
-│   ├── mobilenetv2_model.mat
-│   └── resnet18_model.mat
+│   ├── mobilenetv2_model.mat          modèle soumis
+│   ├── resnet18_model.mat             ResNet-18 gelé
+│   ├── resnet18_partial_ft[_final].mat
+│   └── resnet18_full_ft[_final].mat
 ├── evaluation/              ← comparaison et soumission
 │   ├── evaluate_models.m
 │   ├── compare_models.m
@@ -82,8 +86,21 @@ Les paramètres d'augmentation sont définis **une seule fois** dans `src/traini
 
 ## Prérequis
 
-- MATLAB R2025a, **Deep Learning Toolbox**
-- Le dataset Food-11 copié localement dans `data/train/<classe>/*.jpg` et `data/test/*.jpg`
+- MATLAB R2025a avec la Deep Learning Toolbox (sans elle les réseaux .mat ne se chargent pas)
+- Support packages MobileNet-v2 et ResNet-18, seulement pour réentraîner
+- Le dataset Food-11 copié dans `data/train/<classe>/*.jpg` et `data/test/*.jpg` (pas sur git)
+
+## Refaire la soumission sans réentraîner
+
+Les modèles entraînés sont dans `models/`. Dans MATLAB, à la racine du projet :
+
+```matlab
+setup_project
+run_evaluation
+```
+
+Le JSON est créé dans `results/evaluation/submission_food11.json`. Le modèle utilisé est celui
+qui a le meilleur Frugality Score sur la validation (MobileNetV2).
 
 ## Utilisation
 
@@ -98,17 +115,23 @@ augment_images                % visualise les augmentations
 
 % 2. Entraînement (protocole commun : src/trainingConfig.m)
 train_lenet5
-tune_transfer("mobilenetv2")  % recherche de réglages + modèle final (utilisé pour MobileNetV2)
-train_resnet18
+tune_transfer("mobilenetv2")  % recherche de réglages + modèle final (CPU, environ 5 h)
+train_resnet18                % ResNet-18 gelé
+train_resnet18_partial_ft     % fine-tuning partiel (GPU)
+train_resnet18_full_ft        % fine-tuning complet (GPU)
 
-% 3. Évaluation, figures, tableau et JSON — en une commande :
+% 3. Évaluation, figures, tableau et JSON en une commande :
 run_evaluation
-% équivaut à : evaluate_models → compare_models → make_presentation → generate_json
+% = evaluate_models, compare_models, make_presentation, generate_json
+make_report_figures           % figures du rapport
 ```
+
+Pour relancer un fine-tuning, il faut d'abord supprimer ou renommer `models/resnet18_*_ft*.mat`
+(le script ne les écrase pas).
 
 | Sortie | Fichier |
 |---|---|
-| Tableau des 3 modèles | `results/presentation/tableau_recapitulatif.png` (+ `.csv`, `.md`) |
+| Tableau des 4 modèles | `results/presentation/tableau_recapitulatif.png` (+ `.csv`, `.md`) |
 | Matrices de confusion | `results/presentation/confusion_3_modeles.png` |
 | Accuracy / loss par epoch | `results/presentation/courbes_validation_3_modeles.png` |
 | F1 par classe | `results/presentation/f1_par_classe.png` |
@@ -127,7 +150,7 @@ Tous les scripts retrouvent seuls la racine du projet : aucun chemin absolu n'es
 
 ### Protocole de comparaison
 
-**Identique pour les trois** (`src/trainingConfig.m`) :
+Base commune (`src/trainingConfig.m`) :
 
 | Élément | Valeur |
 |---|---|
@@ -140,15 +163,23 @@ Tous les scripts retrouvent seuls la racine du projet : aucun chemin absolu n'es
 | Seed | 42 |
 | Validation / test | redimensionnement seul, aucune augmentation |
 
-**Différences imposées par le point de départ** :
+Réglages de chaque modèle :
 
-| | LeNet-5 | MobileNetV2 / ResNet-18 |
-|---|---|---|
-| Taille d'entrée | 128×128 | 224×224 (taille des poids ImageNet) |
-| Normalisation | z-score avec les stats du train (`results/preprocessing/normalization_stats.mat`) | normalisation ImageNet intégrée |
-| Learning rate | 1e-3 | 1e-4 |
-| Taille de batch (choisie après essais) | 64 | 8 |
-| Couches entraînées | toutes | dernière couche seulement (`freezeBackbone = true`) |
+| | LeNet-5 | MobileNetV2 (`tune_transfer`) | ResNet-18 gele (`train_resnet18`) | ResNet-18 FT (`train_resnet18_full_ft`) |
+|---|---|---|---|---|
+| Stratégie | from scratch | extraction de caractéristiques | backbone gelé | fine-tuning complet |
+| Taille d'entrée | 128×128 | 224×224 | 224×224 | 224×224 |
+| Normalisation | z-score avec les stats du train | ImageNet intégrée | ImageNet intégrée | ImageNet intégrée |
+| Couches entraînées | toutes | dernière couche (14 091 paramètres) | dernière couche | toutes, à partir de ResNet-18 gele |
+| Learning rate | 1e-3 | 3e-4 (recherche) | 1e-4 | 1e-5 |
+| Batch | 64 | 32 (recherche) | 8 | 8 |
+| Régularisation | dropout 0,2 + L2 par défaut (1e-4) | L2 1e-5 + dropout 0,2 (recherche) | L2 par défaut (1e-4) | L2 par défaut (1e-4) |
+| Pondération des classes | oui | non (recherche) | oui | oui |
+| Augmentation | à la volée | 2 copies pré-calculées par image | à la volée | à la volée |
+| Epochs | 15 | 12 max. | 15 | 10 |
+
+Pour MobileNetV2, la recherche d'hyperparamètres (32 configurations, critère macro-F1) est dans
+`results/tuning/`.
 
 Les modèles pré-entraînés nécessitent les support packages MATLAB *Deep Learning Toolbox Model for ResNet-18 Network* et *… for MobileNet-v2 Network*.
 

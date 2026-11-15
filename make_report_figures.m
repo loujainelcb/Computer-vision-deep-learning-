@@ -32,7 +32,9 @@ perClassTable = readtable(fullfile(evaluationDir, ...
 confusionCounts = readmatrix(fullfile(evaluationDir, ...
     'confusion_counts_mobilenetv2.csv'));
 
-requiredF1Columns = ["Class", "MobileNetV2", "ResNet", "LeNet_5"];
+reportModels = ["LeNet-5", "ResNet-18 gele", "ResNet-18 FT", "MobileNetV2"];
+reportColumns = string(matlab.lang.makeValidName(cellstr(reportModels)));
+requiredF1Columns = ["Class", reportColumns];
 requiredPerClassColumns = ["Class", "Support", "Precision", "Recall", "F1"];
 assertColumns(f1Table, requiredF1Columns, 'classwise_f1_comparison.csv');
 assertColumns(perClassTable, requiredPerClassColumns, ...
@@ -57,10 +59,10 @@ assert(all(isfinite(confusionCounts(:))) && ...
 shortClassNames = shortClassLabels(classOrder);
 
 %% Figure 1 : heatmap compacte du F1-score par classe
-f1Scores = [ ...
-    f1Table.LeNet_5, ...
-    f1Table.ResNet, ...
-    f1Table.MobileNetV2];
+f1Scores = zeros(height(f1Table), numel(reportColumns));
+for k = 1:numel(reportColumns)
+    f1Scores(:, k) = f1Table.(reportColumns(k));
+end
 assert(all(isfinite(f1Scores(:))) && all(f1Scores(:) >= 0) && ...
     all(f1Scores(:) <= 1), 'Les F1-scores doivent etre compris entre 0 et 1.');
 
@@ -76,9 +78,9 @@ ax.XColor = [0 0 0];
 ax.YColor = [0 0 0];
 ax.LineWidth = 0.7;
 ax.Box = 'on';
-ax.XTick = 1:3;
+ax.XTick = 1:numel(reportModels);
 ax.YTick = 1:numel(classOrder);
-ax.XTickLabel = {'LeNet-5', 'ResNet-18', 'MobileNetV2'};
+ax.XTickLabel = {'LeNet-5', 'ResNet-18 gelé', 'ResNet-18 FT', 'MobileNetV2'};
 ax.YTickLabel = cellstr(shortClassNames);
 ax.TickLength = [0 0];
 colormap(ax, parula(256));

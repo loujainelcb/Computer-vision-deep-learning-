@@ -9,7 +9,7 @@
 clearvars; clc;
 
 %% A. CONFIGURATION
-plannedModels = ["LeNet-5","MobileNetV2","ResNet"];
+plannedModels = ["LeNet-5","MobileNetV2","ResNet-18 FT","ResNet-18 gele"];
 projectRoot = locateProjectRoot(fileparts(mfilename('fullpath')));
 resultDir = fullfile(projectRoot,'results','evaluation');
 metricPath = fullfile(resultDir,'model_metrics.csv');
